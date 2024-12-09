@@ -3,11 +3,24 @@ using Scanners;
 
 public class InstructionsScannerTests
 {
-    [Fact]
-    public void EmptyString_ShouldReturnZero()
+    [Theory]
+    [InlineData("")]
+    public void EmptyString_ShouldReturnZero(string instructions)
     {
-        var scanner = new InstructionScanner("");
+        var instructionScanner = new InstructionScanner(instructions);
+        var result = instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
 
+        Assert.Equal(0, result);
+    }
+
+    [Theory]
+    [InlineData("mul(2,4)")]
+    public void ValidCommand_ShouldReturnMultipleOfNumbers(string instructions)
+    {
+        var instructionScanner = new InstructionScanner(instructions);
+        var result = instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
+        
+        Assert.Equal(8, result);
 
     }
 }
