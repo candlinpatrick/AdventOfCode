@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Scanners;
@@ -35,7 +36,7 @@ public class InstructionScanner
             {
                 var copyCommand = command.cmd;
                 copyCommand += currentChar;
-                if(mul.Contains(copyCommand))
+                if(mul.StartsWith(copyCommand))
                 {
                     command.cmd += currentChar;
 
@@ -44,35 +45,40 @@ public class InstructionScanner
                         command.isSet = true;
                     }
                 }
+                else
+                {
+                    command.cmd = "";
+                }
             }
-            else if (command.cmd == mul && !num1.isSet && Char.IsDigit(currentChar))
+            else if (command.isSet && !num1.isSet && Char.IsDigit(currentChar))
             {
                 num1.num += currentChar;
             }
-            else if (command.cmd == mul && !num1.isSet && currentChar == ',')
+            else if (command.isSet && !num1.isSet && currentChar == ',')
             {
                 num1.isSet = true;
             }
-            else if (command.cmd == mul && num1.isSet && Char.IsDigit(currentChar))
+            else if (command.isSet && num1.isSet && Char.IsDigit(currentChar))
             {
                 num2.num += currentChar;
             } 
-            else if (command.cmd == mul 
+            else if (command.isSet 
                 && currentChar == ')' 
                 && double.TryParse(num1.num, out double value1) 
                 && double.TryParse(num2.num, out double value2))
             {
                 var product = value1 * value2;
                 sum += product;
+
+                command = (isSet: false, cmd: "");
+                num1 = (isSet: false, num: "");
+                num2 = (isSet: false, num: "");
             }
             else 
             {
-                if (command.cmd != mul)
-                {
-                    command.cmd = "";
-                    num1 = (isSet: false, num: "");
-                    num2 = (isSet: false, num: "");
-                }
+                command = (isSet: false, cmd: "");
+                num1 = (isSet: false, num: "");
+                num2 = (isSet: false, num: "");
             }
         }
 
