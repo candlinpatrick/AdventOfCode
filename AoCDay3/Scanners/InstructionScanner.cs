@@ -8,9 +8,17 @@ public class InstructionScanner
 {
     public string Instructions; 
 
-    public InstructionScanner(string instructions)
+    private readonly string SkipProcessingCommand = "don't()";
+    private readonly string ContinueProcessingCommand = "do()";
+
+    private readonly string MultiplyCommand = "mul(";
+
+    private bool SkipprocessingEnabled;
+
+    public InstructionScanner(string instructions, bool doProcess = false)
     {
         Instructions = instructions;
+        SkipprocessingEnabled = doProcess;
     }
 
     public double ParseFromInstructions(string instructions)
@@ -21,34 +29,33 @@ public class InstructionScanner
         }
 
         var sum = 0d;
-        var mul = "mul(";
 
         var command = (isSet: false, cmd: "");
         var num1 = (isSet: false, num: ""); 
         var num2 = (isSet: false, num: ""); 
 
-
         for (int i = 0; i < instructions.Length; i++)
         {
             var currentChar = instructions[i];
 
-            if (!command.isSet && mul.Contains(currentChar))
+            if (!command.isSet)
             {
-                var copyCommand = command.cmd;
-                copyCommand += currentChar;
-                if(mul.StartsWith(copyCommand))
+                command = ParseCurrentCommand(command, currentChar);
+            }
+            else if (command.isSet && command.cmd == SkipProcessingCommand)
+            {
+                var continueIndex = instructions.IndexOf(ContinueProcessingCommand, i);
+                if (continueIndex == -1)
                 {
-                    command.cmd += currentChar;
+                    break;
+                }
+                else 
+                {
+                    i = continueIndex + ContinueProcessingCommand.Length - 1;
+                    command = (isSet: false, cmd: "");
+                    continue;
+                }
 
-                    if (command.cmd == mul)
-                    {
-                        command.isSet = true;
-                    }
-                }
-                else
-                {
-                    command.cmd = "";
-                }
             }
             else if (command.isSet && !num1.isSet && Char.IsDigit(currentChar))
             {
@@ -83,5 +90,72 @@ public class InstructionScanner
         }
 
         return sum;
+    }
+
+    private (bool isSet, string cmd) ParseCurrentCommand((bool isSet, string cmd) partailCommand, char commandPart)
+    {
+        if (SkipprocessingEnabled)
+        {
+            var copyCommand = partailCommand.cmd;
+            copyCommand += commandPart;
+
+            if (SkipProcessingCommand.StartsWith(copyCommand))
+            {
+                partailCommand.cmd += commandPart;
+
+                if (partailCommand.cmd == SkipProcessingCommand)
+                {
+                    partailCommand.isSet = true;
+                }
+
+                return partailCommand;
+            }
+            else if (SkipProcessingCommand.StartsWith(commandPart))
+            {
+                partailCommand.cmd = commandPart.ToString();
+                return partailCommand;
+            }
+            
+
+            return PaseMultiplyCommand(partailCommand, commandPart);
+
+        }
+        else
+        {
+            return PaseMultiplyCommand(partailCommand, commandPart);
+        }
+    }
+
+    private (bool isSet, string cmd) ParseDoCommand((bool isSet, string cmd) partailCommand, char commandPart)
+    {
+        throw new NotImplementedException();
+    }
+
+    private (bool isSet, string cmd) PaseMultiplyCommand((bool isSet, string cmd) partailCommand, char commandPart)
+    {
+        if (!partailCommand.isSet && MultiplyCommand.Contains(commandPart))
+        {
+            var copyCommand = partailCommand.cmd;
+            copyCommand += commandPart;
+            if(MultiplyCommand.StartsWith(copyCommand))
+            {
+                partailCommand.cmd += commandPart;
+
+                if (partailCommand.cmd == MultiplyCommand)
+                {
+                    partailCommand.isSet = true;
+                }
+            }
+            else
+            {
+                partailCommand.cmd = "";
+            }
+        }
+        else 
+        {
+            partailCommand.cmd = "";
+        }
+
+        return partailCommand;
     }
 }

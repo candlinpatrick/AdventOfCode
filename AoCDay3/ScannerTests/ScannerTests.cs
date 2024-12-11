@@ -3,6 +3,7 @@ using Scanners;
 
 public class InstructionsScannerTests
 {
+
     [Theory]
     [InlineData("")]
     public void EmptyString_ShouldReturnZero(string instructions)
@@ -38,5 +39,18 @@ public class InstructionsScannerTests
         Assert.Equal(expected, result);
     }
 
+    [Theory]
+    [InlineData("don't()mul(2,4)", 0d)]
+    [InlineData("mul(2,4)don't()mul(2,4)", 8d)]
+    [InlineData("mul(2,4)don't()mul(2,4)do()mul(2,4)", 16d)]
+    [InlineData("muldon't()_mul(5,5)", 0)]
+    [InlineData("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))", 48d)]
+    public void GivenDontProcessCommand_ShouldReturnReturnExpected(string instruction, double expected)
+    {
+        var instructionScanner = new InstructionScanner(instruction, true);
+        var result = instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
+
+        Assert.Equal(expected, result);
+    }
 
 }
