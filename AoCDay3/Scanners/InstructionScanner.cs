@@ -13,12 +13,12 @@ public class InstructionScanner
 
     private readonly string MultiplyCommand = "mul(";
 
-    private bool SkipprocessingEnabled;
+    private bool SkipProcessingEnabled;
 
     public InstructionScanner(string instructions, bool doProcess = false)
     {
         Instructions = instructions;
-        SkipprocessingEnabled = doProcess;
+        SkipProcessingEnabled = doProcess;
     }
 
     public double ParseFromInstructions(string instructions)
@@ -30,132 +30,64 @@ public class InstructionScanner
 
         var sum = 0d;
 
-        var command = (isSet: false, cmd: "");
-        var num1 = (isSet: false, num: ""); 
-        var num2 = (isSet: false, num: ""); 
-
         for (int i = 0; i < instructions.Length; i++)
         {
-            var currentChar = instructions[i];
+            var muliplylocation = instructions.IndexOf(MultiplyCommand, i);
+            var skipProcessingLocation = SkipProcessingEnabled ? instructions.IndexOf(SkipProcessingCommand, i) : int.MaxValue;
 
-            if (!command.isSet)
+            if (muliplylocation == -1)
             {
-                command = ParseCurrentCommand(command, currentChar);
+                break;
             }
-            else if (command.isSet && command.cmd == SkipProcessingCommand)
+            if (skipProcessingLocation == -1)
             {
-                var continueIndex = instructions.IndexOf(ContinueProcessingCommand, i);
-                if (continueIndex == -1)
+                skipProcessingLocation = int.MaxValue;
+            }
+
+            if (skipProcessingLocation < muliplylocation)
+            {
+                var continueProcessingLocation = instructions.IndexOf(ContinueProcessingCommand, skipProcessingLocation + SkipProcessingCommand.Length -1 );
+                if (continueProcessingLocation == -1)
                 {
                     break;
                 }
-                else 
+                i = continueProcessingLocation + (ContinueProcessingCommand.Length - 1);
+                continue;
+            }
+
+            if (muliplylocation < skipProcessingLocation)
+            {
+                (bool isSet, string num) num1 = (isSet: false, num: ""), num2 = (isSet: false, num: "");
+                for (int j = muliplylocation + (MultiplyCommand.Length); j < instructions.Length; j++)
                 {
-                    i = continueIndex + ContinueProcessingCommand.Length - 1;
-                    command = (isSet: false, cmd: "");
-                    continue;
+                    var currentChar = instructions[j];
+                    if (Char.IsDigit(currentChar) && !num1.isSet)
+                    {
+                        num1.num += currentChar;
+                    }
+                    else if (currentChar == ',' && !num1.isSet)
+                    {
+                        num1.isSet = true;
+                    }
+                    else if (num1.isSet && Char.IsDigit(currentChar))
+                    {
+                        num2.num += currentChar;
+                    }
+                    else if (num1.isSet && currentChar == ')' && double.TryParse(num1.num, out double value1) && double.TryParse(num2.num, out double value2))
+                    {
+                        var product = value1 * value2;
+                        sum += product;
+                        i = j;
+                        break;
+                    }
+                    else 
+                    {
+                        break;
+                    }
                 }
-
-            }
-            else if (command.isSet && !num1.isSet && Char.IsDigit(currentChar))
-            {
-                num1.num += currentChar;
-            }
-            else if (command.isSet && !num1.isSet && currentChar == ',')
-            {
-                num1.isSet = true;
-            }
-            else if (command.isSet && num1.isSet && Char.IsDigit(currentChar))
-            {
-                num2.num += currentChar;
-            } 
-            else if (command.isSet 
-                && currentChar == ')' 
-                && double.TryParse(num1.num, out double value1) 
-                && double.TryParse(num2.num, out double value2))
-            {
-                var product = value1 * value2;
-                sum += product;
-
-                command = (isSet: false, cmd: "");
-                num1 = (isSet: false, num: "");
-                num2 = (isSet: false, num: "");
-            }
-            else 
-            {
-                command = (isSet: false, cmd: "");
-                num1 = (isSet: false, num: "");
-                num2 = (isSet: false, num: "");
             }
         }
 
         return sum;
-    }
-
-    private (bool isSet, string cmd) ParseCurrentCommand((bool isSet, string cmd) partailCommand, char commandPart)
-    {
-        if (SkipprocessingEnabled)
-        {
-            var copyCommand = partailCommand.cmd;
-            copyCommand += commandPart;
-
-            if (SkipProcessingCommand.StartsWith(copyCommand))
-            {
-                partailCommand.cmd += commandPart;
-
-                if (partailCommand.cmd == SkipProcessingCommand)
-                {
-                    partailCommand.isSet = true;
-                }
-
-                return partailCommand;
-            }
-            else if (SkipProcessingCommand.StartsWith(commandPart))
-            {
-                partailCommand.cmd = commandPart.ToString();
-                return partailCommand;
-            }
-            
-
-            return PaseMultiplyCommand(partailCommand, commandPart);
-
-        }
-        else
-        {
-            return PaseMultiplyCommand(partailCommand, commandPart);
-        }
-    }
-
-    private (bool isSet, string cmd) ParseDoCommand((bool isSet, string cmd) partailCommand, char commandPart)
-    {
-        throw new NotImplementedException();
-    }
-
-    private (bool isSet, string cmd) PaseMultiplyCommand((bool isSet, string cmd) partailCommand, char commandPart)
-    {
-        if (!partailCommand.isSet && MultiplyCommand.Contains(commandPart))
-        {
-            var copyCommand = partailCommand.cmd;
-            copyCommand += commandPart;
-            if(MultiplyCommand.StartsWith(copyCommand))
-            {
-                partailCommand.cmd += commandPart;
-
-                if (partailCommand.cmd == MultiplyCommand)
-                {
-                    partailCommand.isSet = true;
-                }
-            }
-            else
-            {
-                partailCommand.cmd = "";
-            }
-        }
-        else 
-        {
-            partailCommand.cmd = "";
-        }
-
-        return partailCommand;
     }
 }

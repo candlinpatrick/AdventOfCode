@@ -8,8 +8,18 @@ double sum = 0;
 
 foreach (var line in lines)
 {
+    var instructionScanner = new InstructionScanner(line);
+    sum += instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
+}
+
+Console.WriteLine($"The total sum is of part one is:{sum}");
+
+double sum2 = 0;
+
+foreach (var line in lines)
+{
     var instructionScanner = new InstructionScanner(line, true);
     sum += instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
 }
 
-Console.WriteLine($"The total sum is {sum}");
+Console.WriteLine($"The total sum is of part two is:{sum}");
