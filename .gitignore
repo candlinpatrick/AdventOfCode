@@ -516,3 +516,6 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Ignore input files for the Advent of Code
+*Input.txt
