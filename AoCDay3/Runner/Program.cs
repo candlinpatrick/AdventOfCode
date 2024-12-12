@@ -15,11 +15,11 @@ foreach (var line in lines)
 Console.WriteLine($"The total sum is of part one is:{sum}");
 
 double sum2 = 0;
+bool shouldSkip = false;
+var data = File.ReadAllText("/Users/patrickcandlin/AoC2024/AoCDay3/input.txt");
+var instS = new InstructionScanner(data, true);
+var result = instS.ParseFromInstructions(instS.Instructions);
+sum2 += result;
 
-foreach (var line in lines)
-{
-    var instructionScanner = new InstructionScanner(line, true);
-    sum += instructionScanner.ParseFromInstructions(instructionScanner.Instructions);
-}
 
-Console.WriteLine($"The total sum is of part two is:{sum}");
+Console.WriteLine($"The total sum is of part two is:{sum2}");

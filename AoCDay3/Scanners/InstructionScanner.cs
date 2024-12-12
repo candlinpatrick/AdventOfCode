@@ -52,11 +52,13 @@ public class InstructionScanner
                     break;
                 }
                 i = continueProcessingLocation + (ContinueProcessingCommand.Length - 1);
+                Console.WriteLine($"don't() found before mulitiply! skipProcessingLocation: {skipProcessingLocation}, muliplylocation: {muliplylocation}, continueProcessingLocation {continueProcessingLocation}");
                 continue;
             }
 
             if (muliplylocation < skipProcessingLocation)
             {
+
                 (bool isSet, string num) num1 = (isSet: false, num: ""), num2 = (isSet: false, num: "");
                 for (int j = muliplylocation + (MultiplyCommand.Length); j < instructions.Length; j++)
                 {
@@ -82,6 +84,13 @@ public class InstructionScanner
                     }
                     else 
                     {
+                        if (j == instructions.IndexOf(SkipProcessingCommand, j))
+                        {
+                            i = j - 1;
+                            break;
+                        }
+                        Console.WriteLine($"Invalid char found {currentChar}");
+                        i = j - 1;
                         break;
                     }
                 }
