@@ -72,4 +72,25 @@ public class XScannerTests
 
         Assert.Equal(1,result);
     }
+
+    [Fact]
+    public void GivenExmapleCase_ShouldReturnExpected()
+    {
+        var sample = new string[]
+            {
+                "MMMSXXMASM",
+                "MSAMXMSMSA",
+                "AMXSXMAAMM",
+                "MSAMASMSMX",
+                "XMASAMXAMM",
+                "XXAMMXXAMA",
+                "SMSMSASXSS",
+                "SAXAMASAAA",
+                "MAMMMXMMMM",
+                "MXMXAXMASX"
+            };
+        var result = XScanner.FindAll(sample);
+
+        Assert.Equal(9,result);
+    }
 }
