@@ -28,13 +28,44 @@ public class XScannerTests
         Assert.Equal(1,result);
     }
 
-        public void GivenUsideDownXMas_ShouldReturnOne()
+    [Fact]
+    public void GivenUsideDownXMas_ShouldReturnOne()
     {
         var xmas = new string[]
         {
             "SBS",
             "BAB",
             "MAM",
+        };
+
+        var result = XScanner.FindAll(xmas);
+
+        Assert.Equal(1,result);
+    }
+
+    [Fact]
+    public void GivenOnSideXMas_ShouldReturnOne()
+    {
+        var xmas = new string[]
+        {
+            "MBS",
+            "BAB",
+            "MAS",
+        };
+
+        var result = XScanner.FindAll(xmas);
+
+        Assert.Equal(1,result);
+    }
+
+    [Fact]
+    public void GivenOnOtherSideXMas_ShouldReturnOne()
+    {
+        var xmas = new string[]
+        {
+            "SBM",
+            "BAB",
+            "SAM",
         };
 
         var result = XScanner.FindAll(xmas);
