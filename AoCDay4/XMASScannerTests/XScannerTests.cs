@@ -11,7 +11,7 @@ public class XScannerTests
         var result = XScanner.FindAll(new string[] { });
 
         Assert.Equal(0, result);
-    } 
+    }
 
     [Fact]
     public void GivenOneXMas_ShouldReturnOne()
@@ -25,7 +25,7 @@ public class XScannerTests
 
         var result = XScanner.FindAll(xmas);
 
-        Assert.Equal(1,result);
+        Assert.Equal(1, result);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class XScannerTests
 
         var result = XScanner.FindAll(xmas);
 
-        Assert.Equal(1,result);
+        Assert.Equal(1, result);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class XScannerTests
 
         var result = XScanner.FindAll(xmas);
 
-        Assert.Equal(1,result);
+        Assert.Equal(1, result);
     }
 
     [Fact]
@@ -70,7 +70,24 @@ public class XScannerTests
 
         var result = XScanner.FindAll(xmas);
 
-        Assert.Equal(1,result);
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void GivingPartOfSample_ShouldBe4()
+    {
+        // Given
+        var sample = new string[]
+        {
+            "SMSMSASXSS",
+            "SAXAMASAAA",
+            "MAMMMXMMMM",
+            "MXMXAXMASX",
+        };
+
+        var result = XScanner.FindAll(sample);
+
+        Assert.Equal(4, result);
     }
 
     [Fact]
@@ -91,6 +108,6 @@ public class XScannerTests
             };
         var result = XScanner.FindAll(sample);
 
-        Assert.Equal(9,result);
+        Assert.Equal(9, result);
     }
 }

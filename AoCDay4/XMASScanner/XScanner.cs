@@ -10,7 +10,7 @@ public static class XScanner
     public static int FindAll(string[] lines)
     {
         int count = 0;
-        var topOfXPattern = "M[A-Z]M|S[A-Z]S|S[A-Z]M|M[A-Z]S";
+        var topOfXPattern = "(?=(M[A-Z]M|S[A-Z]S|S[A-Z]M|M[A-Z]S))";
         
         for (int i = 0; i < lines.Length; i++)
         {
@@ -21,7 +21,7 @@ public static class XScanner
             foreach(Match match in matches)
             {
                 var matchIndex = match.Index;
-                var bottomPattern = BottomPatternHelper(match.Value);
+                var bottomPattern = BottomPatternHelper(match.Groups[1].Value);
                 var middlePattern = "A";
 
                 if (i + 2 < lines.Length 
